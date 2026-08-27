@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: spingddd
+  datasource:
+    url: jdbc:postgresql://localhost:15432/postgres?serverTimezone=Asia/Ho_Chi_Minh
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    # database-platform: org.hibernate.dialect.PostgreSQLDialect # Khai báo cứng Dialect
+    show-sql: true # Khuyên dùng thêm để debug query
+    open-in-view: false
+  data:
+    redis:
+      host: localhost # Địa chỉ server Redis (nếu chạy local thì để localhost)
+      port: 6379 # Port mặc định của Redis
+      password: 123456a # Mật khẩu (nếu không có thì để trống)
+      timeout: 60000 # Thời gian timeout khi kết nối (milliseconds)
+  cache:
+    type: redis
+    redis:
+      time-to-live: 3600000 # Thời gian sống (TTL) mặc định của cache: 1 giờ (milliseconds)
+      cache-null-values: false # Không lưu các giá trị null vào cache
