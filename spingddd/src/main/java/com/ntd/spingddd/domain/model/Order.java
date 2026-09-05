@@ -21,9 +21,11 @@ public class Order {
   private Long userId;
   private LocalDateTime createdAt;
   private LocalDateTime updatedAt;
+  private Integer status;
+  private String token;
 
   // Factory method
-  public static Order create(Long productId, Integer quantity, BigDecimal price, Long userId) {
+  public static Order create(Long productId, Integer quantity, BigDecimal price, Long userId, String token) {
     Order order = new Order();
     order.productId = productId;
     order.quantity = quantity;
@@ -32,8 +34,10 @@ public class Order {
     // createdAt and updatedAt will be automatically handled by Hibernate
     // timestamps,
     // but you can initialize them here for immediate use before saving.
+    order.status = 0;
     order.createdAt = LocalDateTime.now();
     order.updatedAt = LocalDateTime.now();
+    order.token = token;
     order.calculateAmount();
     return order;
   }

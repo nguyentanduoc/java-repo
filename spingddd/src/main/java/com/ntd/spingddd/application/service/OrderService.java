@@ -1,16 +1,22 @@
 package com.ntd.spingddd.application.service;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Objects;
+import java.util.UUID;
+import com.alibaba.fastjson2.JSON;
 
 import com.ntd.spingddd.application.command.order.CreateOrderCommand;
 import com.ntd.spingddd.application.exception.NotfoundException;
 import com.ntd.spingddd.domain.model.Inventory;
 import com.ntd.spingddd.domain.model.Order;
+import com.ntd.spingddd.domain.model.OutboxEvent;
 import com.ntd.spingddd.domain.model.Product;
 import com.ntd.spingddd.domain.repository.InventoryRepository;
 import com.ntd.spingddd.domain.repository.OrderRepository;
+import com.ntd.spingddd.domain.repository.OutboxEventRepository;
 import com.ntd.spingddd.domain.repository.ProductRepository;
+import com.ntd.spingddd.infrastructure.mq.PlaceOrderMQMessage;
 
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -30,6 +36,7 @@ public class OrderService {
   private final OrderRepository orderRepository;
   private final StringRedisTemplate redisTemplate;
   private final DefaultRedisScript<Long> inventoryScript;
+  private final OutboxEventRepository outboxEventRepository;
 
   private static final String INVENTORY_KEY_PREFIX = "inventory:product:";
 
@@ -90,15 +97,29 @@ public class OrderService {
       log.warn("Inventoty product id {} not found",
           createOrderCommand.productId());
     }
-    // 3. Update inventory
-    inventoryRepository.updateAvalibleQuality(createOrderCommand.productId(), createOrderCommand.quantity());
-    // 4.Create order
+    // // 3. Update inventory
+    // inventoryRepository.updateAvalibleQuality(createOrderCommand.productId(),
+    // createOrderCommand.quantity());
+    // // 4.Create order
+    String token = "MQ-" + UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+
     Order order = Order.create(createOrderCommand.productId(), createOrderCommand.quantity(), product.getPrice(),
-        createOrderCommand.userId());
+        createOrderCommand.userId(), token);
     orderRepository.save(order);
+
+    PlaceOrderMQMessage mqMessage = new PlaceOrderMQMessage(token, createOrderCommand.productId(),
+        createOrderCommand.quantity(), createOrderCommand.userId(), product.getPrice(), System.currentTimeMillis());
+    OutboxEvent outboxEvent = new OutboxEvent();
+    outboxEvent.setAggregateId(token);
+    outboxEvent.setEventType("ORDER_PLACED");
+    outboxEvent.setPayload(JSON.toJSONString(mqMessage));
+    outboxEvent.setStatus(0);
+    outboxEvent.setCreatedAt(LocalDateTime.now());
+    outboxEventRepository.save(outboxEvent);
+
   }
 
-  @Transactional
+  // @Transactional
   protected boolean handleCacheMissAndDeduct(Long productId, int quantityToDeduct, String key) {
     // Lấy thông tin từ Database
     Inventory inventory = inventoryRepository.getAvalibleQuality(productId);

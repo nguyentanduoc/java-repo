@@ -8,8 +8,9 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
+      POSTGRES_HOST_AUTH_METHOD: trust
     ports:
-      - "15432:5432"
+      - '15432:5432'
     volumes:
       - ./docker/volumes/postgres:/var/lib/postgresql
     networks:
@@ -20,7 +21,7 @@ services:
     container_name: redis-cache
     restart: unless-stopped
     ports:
-      - "6379:6379"
+      - '16379:6379'
     command: redis-server --requirepass 123456a --appendonly yes
     networks:
       - app-network
@@ -31,8 +32,43 @@ services:
     environment:
       - REDIS_HOSTS=local:redis:6379:0:123456a
     ports:
-      - "8081:8081"
+      - '18081:8081'
     depends_on:
       - redis
+    networks:
+      - app-network
+
+  kafka:
+    image: apache/kafka:3.7.0
+    container_name: pre-event-kafka
+    ports:
+      - '19094:9094' # external — Spring Boot (host) connects here
+    environment:
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093,EXTERNAL://:9094
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://pre-event-kafka:9092,EXTERNAL://localhost:9094
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@pre-event-kafka:9093
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_LOG_RETENTION_MS: 604800000
+    healthcheck:
+      test:
+        [
+          'CMD',
+          '/opt/kafka/bin/kafka-topics.sh',
+          '--list',
+          '--bootstrap-server',
+          'localhost:9092',
+        ]
+      interval: 5s
+      timeout: 10s
+      retries: 10
     networks:
       - app-network

@@ -16,6 +16,7 @@ public final class OrderConverter {
         .userId(order.getUserId())
         .createdAt(order.getCreatedAt())
         .updatedAt(order.getUpdatedAt())
+        .status(order.getStatus())
         .build();
   }
 
@@ -29,6 +30,7 @@ public final class OrderConverter {
         .userId(orderDO.getUserId())
         .createdAt(orderDO.getCreatedAt())
         .updatedAt(orderDO.getUpdatedAt())
+        .status(orderDO.getStatus())
         .build();
   }
 }

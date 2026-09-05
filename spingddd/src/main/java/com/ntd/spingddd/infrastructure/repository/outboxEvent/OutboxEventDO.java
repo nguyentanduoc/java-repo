@@ -1,15 +1,14 @@
-package com.ntd.spingddd.infrastructure.repository.order;
+package com.ntd.spingddd.infrastructure.repository.outboxEvent;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,35 +18,29 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Entity(name = "orders")
-public class OrderDO {
-
+@Entity
+@Table(name = "outbox_event")
+public class OutboxEventDO {
   @Id
   @GeneratedValue(strategy = jakarta.persistence.GenerationType.IDENTITY)
   private Long id;
 
   @Column
-  private Long productId;
+  private String aggregateId;
 
   @Column
-  private Integer quantity;
+  private String eventType;
 
   @Column
-  private BigDecimal price;
+  private String payload;
 
   @Column
-  private BigDecimal amount;
-
-  @Column
-  private Long userId;
+  private Integer status;
 
   @CreatedBy
   @Column(updatable = false)
   private LocalDateTime createdAt;
 
-  @LastModifiedDate
-  @Column(updatable = false)
-  private LocalDateTime updatedAt;
-
-  private Integer status;
+  @Column
+  private LocalDateTime publishedAt;
 }
