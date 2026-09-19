@@ -15,6 +15,7 @@
 - DI: @RequiredArgsConstructor + trường final; KHÔNG dùng @Autowired.
 - Bảng Orders: "orders". Token: MQ- + UUID 16 ký tự, không có dấu gạch ngang.
 - Ghi nhật ký: @Slf4j, không bao giờ dùng System.out. Ngoại lệ: NotfoundException (404), BadRequestException (400).
+- **Coding Rules:** Mọi code PHẢI tuân theo `docs/coding-rules.md` (bao gồm: không warning, import tập trung ở đầu file, chuẩn hóa format).
 
 ## 3. Cấu Trúc Thư Mục (DDD)
 src/main/java/com/ntd/spingddd/
@@ -39,7 +40,7 @@ src/test/resources/application-test.yml (create-drop, kafka giả)
 Chỉ thị chung: nếu nhiệm vụ liên quan đến CÔNG CỤ, agent PHẢI đọc docs/skills/[Tên_Công_Cụ].md.
 
 ## 5. Kỹ Năng Theo Yêu Cầu (Tầng 3 — docs/skills/)
-Hiện có 2 tệp thực sự: Docker.md (4 dịch vụ: Postgres, Redis, Redis-Commander, Kafka), Testing.md (chiến lược E2E).
+Hiện có 3 tệp chính: Docker.md, Testing.md, coding-rules.md.
 
 ## 6. Bộ Nhớ Chung Bền Vững (Tầng 4 — MEMORIES.md)
 Khi sửa lỗi phức tạp hoặc quyết định kiến trúc mới, HÃY THÊM dòng này vào MEMORIES.md:
