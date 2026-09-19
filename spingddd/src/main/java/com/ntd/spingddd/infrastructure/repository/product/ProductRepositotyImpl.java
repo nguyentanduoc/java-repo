@@ -17,11 +17,10 @@ public class ProductRepositotyImpl implements ProductRepository {
 
   private final ProductJpa productJpa;
 
-  @Override
-  @Cacheable(value = "products", key = "#p0")
+        @Override
+  @Cacheable(value = "products", key = "#p0", unless = "#result == null")
   public Product findById(Long productId) {
     Optional<ProductDO> productDO = productJpa.findById(productId);
     return productDO.map(ProductConverter::toProduct).orElse(null);
   }
-
 }

@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import org.springframework.transaction.annotation.Transactional;
 import com.ntd.spingddd.infrastructure.repository.outboxEvent.OutboxEventDO;
 
 public interface OutboxEventJpa extends JpaRepository<OutboxEventDO, Long> {
@@ -16,6 +17,7 @@ public interface OutboxEventJpa extends JpaRepository<OutboxEventDO, Long> {
   List<OutboxEventDO> findPending(Pageable pageable);
 
   @Modifying // Bắt buộc phải có đối với câu lệnh UPDATE/DELETE
+  @Transactional
   @Query("UPDATE OutboxEventDO o SET o.status = 1, o.publishedAt = :publishedAt WHERE o.id = :id")
   int update(LocalDateTime publishedAt, Long id);
 }

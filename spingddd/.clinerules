@@ -1,0 +1,9 @@
+# Cline Rules (Spoke)
+
+Read AGENTS.md before executing any task.
+
+## Cline Specific Instructions
+1. Always use absolute paths: d:\Project\java\java-repo\spingddd\...
+2. Follow the DDD dependency rule strictly.
+3. Before finishing any task, run ./gradlew test and verify JaCoCo coverage is 100%.
+4. If you modify the database schema, update src/main/resources/db/01-init-product.sql.

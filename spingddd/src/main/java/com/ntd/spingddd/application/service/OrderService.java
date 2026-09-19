@@ -78,29 +78,12 @@ public class OrderService {
       throw new NotfoundException("Product id " + createOrderCommand.productId() + " not found");
     }
 
-    // // 2.check product quantity
-    // Inventory inventory =
-    // inventoryRepository.getAvalibleQuality(createOrderCommand.productId());
-    // if (Objects.isNull(inventory)) {
-    // log.warn("Inventoty product id {} not found",
-    // createOrderCommand.productId());
-    // throw new NotfoundException("Inventoty product id " +
-    // createOrderCommand.productId() + " not found");
-    // }
-
-    // // 3. Decrease inventory
-    // inventory.deductStock(createOrderCommand.quantity());
-    // inventoryRepository.updateAvalibleQuality(inventory);
-
-    // 2.check product quantity + 3. Decrease inventory
+        // 2.check product quantity + 3. Decrease inventory
     if (!deductInventory(createOrderCommand)) {
-      log.warn("Inventoty product id {} not found",
-          createOrderCommand.productId());
+      log.warn("Inventoty product id {} not found or insufficient stock", createOrderCommand.productId());
+      throw new com.ntd.spingddd.application.exception.BadRequestException("Insufficient stock for product id " + createOrderCommand.productId());
     }
-    // // 3. Update inventory
-    // inventoryRepository.updateAvalibleQuality(createOrderCommand.productId(),
-    // createOrderCommand.quantity());
-    // // 4.Create order
+    // 4.Create order
     String token = "MQ-" + UUID.randomUUID().toString().replace("-", "").substring(0, 16);
 
     Order order = Order.create(createOrderCommand.productId(), createOrderCommand.quantity(), product.getPrice(),

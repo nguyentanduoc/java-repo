@@ -9,6 +9,7 @@ public final class OrderConverter {
   public static OrderDO toOrderDO(Order order) {
     return OrderDO.builder()
         .id(order.getId())
+        .token(order.getToken())
         .productId(order.getProductId())
         .quantity(order.getQuantity())
         .amount(order.getAmount())
@@ -23,6 +24,7 @@ public final class OrderConverter {
   public static Order toOrder(OrderDO orderDO) {
     return Order.builder()
         .id(orderDO.getId())
+        .token(orderDO.getToken())
         .productId(orderDO.getProductId())
         .quantity(orderDO.getQuantity())
         .amount(orderDO.getAmount())

@@ -20,12 +20,12 @@ public class KafkaOrderProducer {
   public void publish(PlaceOrderMQMessage domainEvent) {
     // Gửi lên Kafka: Key là orderId giúp các message cùng đơn hàng luôn vào 1
     // Partition
-    kafkaTemplate.send(KafkaTopicConfig.ORDER_PLACE_TOPIC, domainEvent.getToken(), domainEvent)
+        kafkaTemplate.send(KafkaTopicConfig.ORDER_PLACE_TOPIC, domainEvent.getToken(), domainEvent)
         .whenComplete((result, ex) -> {
           if (ex == null) {
-            System.out.println("Gửi Kafka thành công Offset: " + result.getRecordMetadata().offset());
+            log.info("Gửi Kafka thành công Offset: {}", result.getRecordMetadata().offset());
           } else {
-            System.err.println("Gửi Kafka thất bại: " + ex.getMessage());
+            log.error("Gửi Kafka thất bại: {}", ex.getMessage());
           }
         });
   }

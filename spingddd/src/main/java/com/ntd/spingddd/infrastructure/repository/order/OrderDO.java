@@ -41,6 +41,9 @@ public class OrderDO {
   @Column
   private Long userId;
 
+  @Column(nullable = false, length = 64, unique = true)
+  private String token;
+
   @CreatedBy
   @Column(updatable = false)
   private LocalDateTime createdAt;

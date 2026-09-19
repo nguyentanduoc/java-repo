@@ -20,4 +20,13 @@ public class OrderRepositoryImpl implements OrderRepository {
     return OrderConverter.toOrder(orderDO);
   }
 
+  @Override
+  public Order findByToken(String token) {
+    OrderDO orderDO = orderJpa.findByToken(token);
+    if (orderDO == null) {
+      return null;
+    }
+    return OrderConverter.toOrder(orderDO);
+  }
+
 }
